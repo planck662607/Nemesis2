@@ -82,11 +82,11 @@ public class ObjLoader {
 
 	private void parseLine(String line) {
 		if(line.startsWith(COMMENT)) {
-			System.out.println("Commentaire : "+line);
+//			System.out.println("Commentaire : "+line);
 		} else if(line.startsWith(OBJECT)) {
-			System.out.println("Objet : "+line);
+//			System.out.println("Objet : "+line);
 		} else if(line.startsWith(GROUP)) {
-			System.out.println("Groupe : "+line);
+//			System.out.println("Groupe : "+line);
 			String s[] = line.split("\\s+");
 	        addObject(new ObjectDef(s[1]));
 		} else if(line.startsWith(VERTEX_DATA)) {
@@ -114,7 +114,7 @@ public class ObjLoader {
 	            }
 	        }
 	        // XXX 
-	        System.out.println("taiter la face");
+//	        System.out.println("taiter la face");
 	        int vdata[] = new int[s.length-1];
 	        int vtdata[] = new int[s.length-1];
 	        int vndata[] = new int[s.length-1];
@@ -161,7 +161,7 @@ public class ObjLoader {
 	}
 	
 	public void scale(float sx, float sy, float sz) {
-		System.out.format("scale sx %3.2f sy %3.2f sz %3.2f\n", sx, sy, sz);
+		//System.out.format("scale sx %3.2f sy %3.2f sz %3.2f\n", sx, sy, sz);
 		getBounds();
 		for(ObjectDef o : objects) {
 			float[] tv = o.getVertices();
@@ -187,7 +187,7 @@ public class ObjLoader {
 				bounds[5] = Math.max(bounds[5],tv[3*i+2]);
 			}
 		}
-		System.out.format("Bounds min v %3.2f, %3.2f, %3.2f max v %3.2f, %3.2f, %3.2f\n", bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5]);
+		//System.out.format("Bounds min v %3.2f, %3.2f, %3.2f max v %3.2f, %3.2f, %3.2f\n", bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5]);
 		return bounds;
 	}
 	public void center() {

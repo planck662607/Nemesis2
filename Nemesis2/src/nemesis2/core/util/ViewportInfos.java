@@ -1,5 +1,7 @@
 package nemesis2.core.util;
 
+import nemesis2.core.util.bounds.Bounds;
+
 public class ViewportInfos {
 
 	public ViewportInfos(float minxNearPlan, float minyNearPlan, float widthNearPlan, float heightNearPlan, float nearPlanZ) {
@@ -25,11 +27,19 @@ public class ViewportInfos {
 	public float midx, midy;
 	public float halfw, halfh;
 	
+	// Z bounds references
+	public float zReference;
+	public float xReference;
+	public float yReference;
+	public float widthReference;
+	public float heightReference;
+	
 	public void setUpPosition(float minxNearPlan, float minyNearPlan) {
 		this.minxNearPlan = minxNearPlan;
 		this.minyNearPlan = minyNearPlan;
 		midx = minxNearPlan + halfw;
 		midy = minyNearPlan + halfh;
+		setUpZBoundsReference(zReference);
 	}
 	
 	private float bound[] = {0,0,0,0,0,0};
@@ -56,4 +66,21 @@ public class ViewportInfos {
 
 		return bound;
 	}
+	
+	public void setUpZBoundsReference(float zRef) {
+		zReference = zRef; // /nearPlanZ;
+		float[] bounds = getDistBound(zReference);
+		xReference = bounds[0];
+		yReference = bounds[1];
+		widthReference = bounds[4];
+		heightReference = bounds[5];
+	}
+	
+	public void convertBounds(Bounds b, float dist) {
+		float[] bounds = getDistBound(dist);
+		float cw = widthReference / bounds[4];
+		float ch = heightReference / bounds[5];
+		b.setUp(xReference+(b.x - bounds[0])*cw, yReference+(b.y - bounds[1])*ch, b.width*cw, b.height*ch);
+	}
+	
 }

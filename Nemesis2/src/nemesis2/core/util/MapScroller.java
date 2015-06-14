@@ -112,7 +112,7 @@ public class MapScroller {
 				coords = r.readLine();
 				x=0;
 				for(String c : coords.trim().split("\\s+")) {
-					System.out.println("X "+x+" Y "+y+" c='"+c+"'");
+					//System.out.println("X "+x+" Y "+y+" c='"+c+"'");
 					theMap[y][x]=Short.parseShort(c);					
 					x++;
 				}
@@ -366,6 +366,14 @@ public class MapScroller {
 	private float startyPos;
 	private int nbWidth;
 	private int nbHeight;
+	// pour les collision
+	public int getStartxIndex() {return startxIndex;}
+	public int getStartyIndex() {return startyIndex;}
+	public float getStartxPos() {return startxPos;}
+	public float getStartyPos() {return startyPos;}
+	public int getNbWidth() {return nbWidth;}
+	public int getNbHeight() {return nbHeight;}
+
 	public void update() {
 		if(posReady) return;
 		posReady=true;

@@ -159,17 +159,17 @@ public class ObjectDef {
 		for(int i=0; i<(vertices.length/3); i++) {
 //			if(vertices[3*i]==vert[0] && vertices[3*i+1]==vert[1] && vertices[3*i+2]==vert[2]) {
 			if(etol(vertices[3*i], vert[0]) && etol(vertices[3*i+1], vert[1]) && etol(vertices[3*i+2], vert[2])) {
-				System.out.format("potential match v %3.2f/%3.2f %3.2f/%3.2f %3.2f/%3.2f %d\n", vertices[3*i], vert[0], vertices[3*i+1], vert[1], vertices[3*i+2], vert[2],i);
+//				System.out.format("potential match v %3.2f/%3.2f %3.2f/%3.2f %3.2f/%3.2f %d\n", vertices[3*i], vert[0], vertices[3*i+1], vert[1], vertices[3*i+2], vert[2],i);
 				if(!useTex || (textCoords[2*i]==tex[0] && textCoords[2*i+1]==tex[1])) {
-					System.out.println("potential match t "+i);
+//					System.out.println("potential match t "+i);
 					if(!useNormal || (etol(normals[3*i],norm[0]) && etol(normals[3*i+1], norm[1]) && etol(normals[3*i+2], norm[2]))) {
-						System.out.println("confirmed match "+i);
+//						System.out.println("confirmed match "+i);
 						return (short) i;
 					}
 				}
 			}
 		}
-		System.out.format("no match v %3.2f %3.2f %3.2f \n", vert[0], vert[1], vert[2]);
+//		System.out.format("no match v %3.2f %3.2f %3.2f \n", vert[0], vert[1], vert[2]);
 		return -1;
 	}
 	
@@ -182,6 +182,7 @@ public class ObjectDef {
 		tmpNormals = null;
 		tmpTextCoords = null;
 		
+		/*
 		System.out.format("Complete v %d   n %d   t %d i %d [%d faces]\n", vertices.length, normals.length, textCoords.length, indices.length, (indices.length/3));
 		for(int i=0; i<vertices.length/3; i++) 
 			if(vertices.length==normals.length) System.out.format("v %3.2f, %3.2f, %3.2f n %3.2f, %3.2f, %3.2f \n", vertices[3*i], vertices[3*i+1], vertices[3*i+2], normals[3*i], normals[3*i+1], normals[3*i+2]);
@@ -193,7 +194,7 @@ public class ObjectDef {
 			System.out.format("v %3.2f, %3.2f\n", textCoords[2*i], textCoords[2*i+1]);
 		for(int i=0; i<indices.length/3; i++) 
 			System.out.format("F %3d %3d %3d\n", indices[3*i], indices[3*i+1], indices[3*i+2]);
-		
+		*/
 	}
 
 	public void setUseIndices(boolean useIndices) {

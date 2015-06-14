@@ -3,15 +3,18 @@ package nemesis2.level.objects;
 import javax.media.opengl.GL2;
 
 import nemesis2.core.util.Stab;
+import nemesis2.core.util.bounds.Bounding;
+import nemesis2.core.util.bounds.Bounds;
 
-public class Metalion {
+public class Metalion implements Bounding {
 	private float px;
 	private float py;
 	private float pz;
 	//	private float pz;
 	//	private float radius;
 	//	private float height;
-	private float bounds[] = {0,0,0,0};
+//	private float bounds[] = {0,0,0,0};
+	private Bounds bounds = new Bounds();
 
 	private float rotatex;
 	private Stab stab;
@@ -58,13 +61,22 @@ public class Metalion {
 		this.pz = pz;
 //		setupBounds();
 	}
+	private float boundPrecision = .5f; // 1 pour 100%
 	private void setupBounds() {
-		bounds[0] = px-manager.getHalfWidth();
-		bounds[1] = py-manager.getHalfHeight();
-		bounds[2] = px+manager.getHalfWidth();
-		bounds[3] = py+manager.getHalfHeight();
+//		bounds[0] = px-manager.getHalfWidth();
+//		bounds[1] = py-manager.getHalfHeight();
+//		bounds[2] = px+manager.getHalfWidth();
+//		bounds[3] = py+manager.getHalfHeight();
+		float recHalfWidth = manager.getHalfWidth()*boundPrecision;
+		float recHalfHeight = manager.getHalfHeight()*boundPrecision;
+		
+		bounds.x = px-recHalfWidth; // manager.getHalfWidth();
+		bounds.y = py-recHalfHeight; //manager.getHalfHeight();
+		bounds.setWidth(recHalfWidth*2);
+		bounds.setHeight(recHalfHeight*2);
+//		
 	}
-	public float[] getBounds() {return bounds;}
+//	public float[] getBounds() {return bounds;}
 
 	public float getRotatey() {
 		return rotatex;
@@ -123,5 +135,15 @@ public class Metalion {
 
 	public void setSpeed(float speed) {
 		this.speed = speed;
+	}
+
+	@Override
+	public float getZDistance() {
+		return -pz;
+	}
+
+	@Override
+	public Bounds getBoundingBox() {
+		return bounds;
 	}
 }

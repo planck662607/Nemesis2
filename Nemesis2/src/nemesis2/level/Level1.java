@@ -10,6 +10,8 @@ import nemesis2.core.controller.AppKeyController;
 import nemesis2.core.util.MapScroller;
 import nemesis2.core.util.MapVboRenderer;
 import nemesis2.core.util.ViewportInfos;
+import nemesis2.core.util.bounds.Bounds;
+import nemesis2.level.colissimo.Colissimo1;
 import nemesis2.level.objects.GreenStatue;
 import nemesis2.level.objects.GreenStatueManager;
 import nemesis2.level.objects.Metalion;
@@ -19,6 +21,7 @@ public class Level1 implements Level {
 
 	private GL2 gl;
 	private ViewportInfos viewportInfos;
+	private Colissimo1 colis;
 
 	private MapScroller mapScroller;
 	private GreenStatueManager greenStatueDef;
@@ -28,6 +31,7 @@ public class Level1 implements Level {
 	public Level1(GL2 gl, ViewportInfos viewportInfos) {
 		this.gl = gl;
 		this.viewportInfos = viewportInfos;
+		colis = new Colissimo1(viewportInfos);
 		initialize();
 	}
 	
@@ -69,6 +73,8 @@ public class Level1 implements Level {
 	}
 
 	private void initializeLevelObjects() {
+		//colis.setZReference(10f);
+		viewportInfos.setUpZBoundsReference(10f);
 		mapScroller = new MapScroller();
 		mapScroller.setGl(gl);
 		// avant le viewport qui a besoin de la distance
@@ -79,9 +85,13 @@ public class Level1 implements Level {
 //		mapScroller.setLimitsParameters(-6,-6, 1, 10f);
 		// apres le viewport
 		mapScroller.setPosParameters(0 /*mapScroller.getLiminx()*/, mapScroller.getLimaxy() /* bug list 4.6f*/) ;
+//		mapScroller.setSizesParameters(30, 24);
+//		mapScroller.initializeMapRenderer(new MapVboRenderer(), "/Users/francois/Pictures/graphic/nem/map-01pa.png", 184, 184, 8, 8);
+//		mapScroller.setTheMap("/Users/francois/Pictures/graphic/nem/map-01pa.txt");
 		mapScroller.setSizesParameters(30, 24);
-		mapScroller.initializeMapRenderer(new MapVboRenderer(), "/Users/francois/Pictures/graphic/nem/map-01pa.png", 184, 184, 8, 8);
-		mapScroller.setTheMap("/Users/francois/Pictures/graphic/nem/map-01pa.txt");
+		mapScroller.initializeMapRenderer(new MapVboRenderer(), "/Users/francois/Pictures/graphic/nem/map-01pb.png", 128, 128, 8, 8);
+		mapScroller.setTheMap("/Users/francois/Pictures/graphic/nem/map-01pb.txt");
+
 		// 4x8
 		// 
 //		float statuesZ = 11f;
@@ -89,7 +99,8 @@ public class Level1 implements Level {
 //		float unith = (viewportInfos.heightNearPlan*statuesZ / viewportInfos.nearPlanZ)/24;
 //		System.out.println(2*unitw);
 //		greenStatueDef = new GreenStatueManager(gl, 2*unitw, 8*unith, 8, mapScroller.getTexture(), 184, 0, 48, 64);
-		greenStatueDef = new GreenStatueManager(gl, viewportInfos, 30, 24, 2, 8, 8, mapScroller.getTexture(), 184, 0, 48, 64, 10f);
+//		greenStatueDef = new GreenStatueManager(gl, viewportInfos, 30, 24, 2, 8, 8, mapScroller.getTexture(), 184, 0, 48, 64, 10f);
+		greenStatueDef = new GreenStatueManager(gl, viewportInfos, 30, 24, 2, 8, 8, mapScroller.getTexture(), 0, 64, 48, 64, 10f);
 		//greenStatueDef.setViewportInfos(viewportInfos);
 		float speed = 0.005f;
 		greenStatueDef.addStatue(103,4); // 0
@@ -117,6 +128,13 @@ public class Level1 implements Level {
 	//public int tempTestdir=0;
 	//GLAutoDrawable drawable;
 
+	
+	float sqtestx = 0;
+	float sqtesty = 0;
+	float sqtestz = -5;
+	float sqtestwh = 0.1f;
+	private boolean collid;
+	
 	@Override
 	public void update() {
 		float scrollSpeed = 0.1f/viewportInfos.nearPlanZ;
@@ -135,7 +153,8 @@ public class Level1 implements Level {
 			}
 			scrollSpeed = 0;
 		} else if(!AppKeyController.isSpace()){
-			scrollSpeed = 0.023125f/viewportInfos.nearPlanZ;
+//			scrollSpeed = 0.023125f/viewportInfos.nearPlanZ;
+			scrollSpeed = 0.0225f/viewportInfos.nearPlanZ;
 			viewportInfos.setUpPosition(viewportInfos.minxNearPlan+scrollSpeed, viewportInfos.minyNearPlan);
 		} else {
 			scrollSpeed = 0;
@@ -156,6 +175,62 @@ public class Level1 implements Level {
 //		if(up) metalionManager.metalion.setDir((short) 0x04);
 //		else if(down) metalionManager.metalion.setDir((short) 0x08);
 //		else metalionManager.metalion.setDir((short) 0);
+		sqtestx +=scrollSpeed;
+
+		Bounds bds= new Bounds(sqtestx, sqtesty, sqtestwh, sqtestwh);
+		viewportInfos.convertBounds(bds, -sqtestz);
+		collid = met.getBoundingBox().intersect(bds);
+		
+		// test
+		// test collision decors
+		// fonctionne pas mal mais il faudrait un bounds par type de block
+		if(mapScroller.getNbWidth()>0 && mapScroller.getNbHeight()>0) {
+			// collision avec le decors
+			//System.out.println(mapScroller.getNbWidth());
+			short[][] decors = mapScroller.getTheMap();
+			int sx = mapScroller.getStartxIndex();
+			int sy = mapScroller.getStartyIndex();
+			float bw = mapScroller.getBlockWidth();
+			float bh = mapScroller.getBlockHeight();
+			
+			float recBh = -1f;
+			float recy=0;
+			
+			float decorsx = mapScroller.getStartxPos();
+			float decorsy = mapScroller.getStartyPos()-bh;
+			Bounds decorsPartBounds = new Bounds();
+			//Bounds metBounds = met.getBoundingBox();
+//			System.out.println(decorsx+" "+decorsy+" "+bw+" "+bh+" - met - "+metBounds.x+" "+metBounds.y+" "+metBounds.width+" "+metBounds.height+" - nb -"+mapScroller.getNbWidth()+" "+mapScroller.getNbHeight());
+			for(int y=sy; y<sy+mapScroller.getNbHeight(); y++) {
+				decorsx = mapScroller.getStartxPos();
+				for(int x=sx; x<sx+mapScroller.getNbWidth(); x++) {
+					//System.out.format("%2d/%2d %3d ", y, x, decors[y][x]);
+					if(decors[y][x]!=(short)0) {
+						decorsPartBounds.setUp(decorsx, decorsy, bw, bh);
+						// inutile si même distance
+						if(recBh<0) {
+							recBh=bh*0.5f;
+							recy = recBh/2f;
+						}
+						//decorsPartBounds.y +=recy;
+						decorsPartBounds.setUp(decorsx, decorsy+recy, bw, recBh);
+						viewportInfos.convertBounds(decorsPartBounds, mapScroller.getDistance());
+						if(met.getBoundingBox().intersect(decorsPartBounds)) {
+							//System.out.println(met.getBoundingBox()+" : "+decorsPartBounds);
+							collid = true;
+							break;
+						}
+					}
+					decorsx+=bw;
+				}
+				if(collid) break;
+				//System.out.println();
+				decorsy-=bh;
+			}
+			
+		}
+	
+		
 	}
 
 
@@ -171,12 +246,59 @@ public class Level1 implements Level {
 		}
 //		gl.glDisable(GL.GL_CULL_FACE);
 		gl.glEnable(GL2.GL_LIGHTING);
+		if(collid) gl.glColor3f(1, 0, 0);
 		metalionManager.render();
 		gl.glDisable(GL2.GL_LIGHTING);
 	//	gl.glEnable(GL.GL_CULL_FACE);  // une face d'un seul cote / anti horaire xy, x+ny, x+ny+n, xy+n
 		gl.glDisable(GL2.GL_DEPTH_TEST); // pour forcer statue derriere
+		gl.glColor3f(1, 1, 1);
 		mapScroller.render();
 		gl.glEnable(GL2.GL_DEPTH_TEST);
+		
+		// rendu du square de test;
+		if(AppKeyController.isShift()) {
+			gl.glColor3f(1f, 1f, 0f);
+			gl.glBegin(GL2.GL_QUADS);
+			gl.glVertex3f(sqtestx, sqtesty, sqtestz);
+			gl.glVertex3f(sqtestx+sqtestwh, sqtesty, sqtestz);
+			gl.glVertex3f(sqtestx+sqtestwh, sqtesty+sqtestwh, sqtestz);
+			gl.glVertex3f(sqtestx, sqtesty+sqtestwh, sqtestz);		
+			gl.glEnd();
+		}
+
+		float dist =-10f;
+		Bounds bds= new Bounds(sqtestx, sqtesty, sqtestwh, sqtestwh);
+		viewportInfos.convertBounds(bds, -sqtestz);
+		gl.glColor3f(1f, 0f, 0f);
+		gl.glBegin(GL2.GL_QUADS);
+		gl.glVertex3f(bds.getX(), bds.getY(), dist);
+		gl.glVertex3f(bds.getxEnd(), bds.getY(), dist);
+		gl.glVertex3f(bds.getxEnd(), bds.getyEnd(), dist);
+		gl.glVertex3f(bds.getX(), bds.getyEnd(), dist);		
+		gl.glEnd();
+		
+//		float[] vpb = viewportInfos.getDistBound(-sqtestz);
+//		float sqstx = vpb[0];
+//		float sqsty = vpb[1];
+//		float sqtw = vpb[4];
+//		float sqth = vpb[5];
+//		vpb = viewportInfos.getDistBound(-dist);
+//		float convstx = vpb[0];
+//		float convsty = vpb[1];
+//		float convw = vpb[4];
+//		float convh = vpb[5];
+//		
+//		float convx = convstx+(sqtestx-sqstx)*convw/(sqtw);
+//		float convy = convsty+(sqtesty-sqsty)*convh/sqth;
+//		float cw = sqtestwh*convw/sqtw;
+//		
+//		gl.glColor3f(1f, 0f, 0f);
+//		gl.glBegin(GL2.GL_QUADS);
+//		gl.glVertex3f(convx, convy, dist);
+//		gl.glVertex3f(convx+cw, convy, dist);
+//		gl.glVertex3f(convx+cw, convy+cw, dist);
+//		gl.glVertex3f(convx, convy+cw, dist);		
+//		gl.glEnd();
 	}
 
 	@Override
