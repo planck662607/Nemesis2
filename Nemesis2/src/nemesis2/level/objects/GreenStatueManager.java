@@ -199,6 +199,10 @@ public class GreenStatueManager {
 		this.objects = objects;
 	}
 	
+	public GreenStatue[] getObjects() {
+		return objects;
+	}
+	
 	void addObject(GreenStatue object) {
 		if(this.objects==null || objects.length==0) objects=new GreenStatue[]{object};
 		else {

@@ -9,6 +9,8 @@ import java.io.IOException;
 
 import javax.media.opengl.GL2;
 
+import nemesis2.core.util.bounds.Bounds;
+import nemesis2.core.util.bounds.BoundsModifier;
 import nemesis2.core.util.texture.TextureUtil;
 
 import com.jogamp.opengl.util.texture.Texture;
@@ -40,6 +42,7 @@ public class MapScroller {
 	///
 //	private MapDefinition mapdef;
 	private short[][] theMap;
+	private Bounds[] theBounds;
 	
 //	private float currentNearPlanPosx = 0; // position de la fenêtre (viewport)
 //	private float currentNearPlanPosy = 0; // en coordonnées / distance nearPlanZ de l'appli
@@ -99,35 +102,69 @@ public class MapScroller {
 	}
 
 	public void setTheMap(String file) {
+//		try {
+//			BufferedReader r = new BufferedReader(new FileReader(file));
+//			String coords = r.readLine();
+//			int x = coords.indexOf('x');
+//			int h = Integer.parseInt(coords.substring(0, x));
+//			int w = Integer.parseInt(coords.substring(x+1));
+//			
+//			theMap = new short[h][w];
+//			System.out.println(h+"x"+w);
+//			for(int y=0;y<h;y++) {
+//				coords = r.readLine();
+//				x=0;
+//				for(String c : coords.trim().split("\\s+")) {
+//					//System.out.println("X "+x+" Y "+y+" c='"+c+"'");
+//					theMap[y][x]=Short.parseShort(c);					
+//					x++;
+//				}
+//			}
+//			// XXX lecture des bounds
+//			r.close();
+//			
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		MapReader mr = new MapReader();
 		try {
-			BufferedReader r = new BufferedReader(new FileReader(file));
-			String coords = r.readLine();
-			int x = coords.indexOf('x');
-			int h = Integer.parseInt(coords.substring(0, x));
-			int w = Integer.parseInt(coords.substring(x+1));
-			
-			theMap = new short[h][w];
-			System.out.println(h+"x"+w);
-			for(int y=0;y<h;y++) {
-				coords = r.readLine();
-				x=0;
-				for(String c : coords.trim().split("\\s+")) {
-					//System.out.println("X "+x+" Y "+y+" c='"+c+"'");
-					theMap[y][x]=Short.parseShort(c);					
-					x++;
-				}
-			}
-			r.close();
-			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			mr.loadMap(file);
+			theMap = mr.getMap();
+			theBounds = computeBounds(mr.getBoundsModifiers());
+			System.out.println("Bounds computed");
+			for(int i=0; i<theBounds.length; i++)
+				System.out.format("%3d -> x %1.3f y %1.3f w %1.3f h %1.3f\n", i, theBounds[i].x, theBounds[i].y, theBounds[i].width, theBounds[i].height);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	//	if(renderer!=null) renderer.setTheMap(theMap);
 	}
+
+	private Bounds[] computeBounds(BoundsModifier[] boundsModifiers) {
+		Bounds[] theBounds = new Bounds[boundsModifiers.length];
+		float bw = getBlockWidth();
+		float bh = getBlockHeight();
+		for(int i=0; i<boundsModifiers.length; i++) {
+			BoundsModifier bm = boundsModifiers[i];
+//			float x1 =  0 - bw*bm.left;
+//			float y1 =  0 - bh*bm.bottom;
+//			float x2 = bw + bw*bm.right;
+//			float y2=  bh + bh*bm.top;
+//			float w = x2-x1;
+//			float h = y2-y1;
+			Bounds bounds = new Bounds(0, 0, bw, bh);
+			bm.computeBounds(bounds);
+			theBounds[i] = bounds; //new Bounds(x1, y1, w, h);
+		}
+		return theBounds;
+	}
+
+
 
 	public float getDistance() {
 		return distance;
@@ -501,5 +538,11 @@ public class MapScroller {
 		gl.glDisable(GL_BLEND);
 		texture.disable(gl);
 		
+	}
+
+
+
+	public Bounds[] getTheBounds() {
+		return theBounds;
 	}
 }

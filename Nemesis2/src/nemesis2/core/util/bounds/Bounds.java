@@ -36,6 +36,14 @@ public class Bounds {
 		xEnd=x+w;
 		yEnd=y+h;
 	}
+	public void setUp(Bounds b) {
+		x=b.x;
+		y=b.y;
+		width = b.width;
+		height = b.height;
+		xEnd = b.xEnd;
+		yEnd = b.yEnd;
+	}
 	
 	public float getX() {
 		return x;

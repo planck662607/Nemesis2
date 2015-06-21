@@ -105,7 +105,9 @@ public class MetalionManager {
 //	        gl.glBufferData(GL2.GL_ARRAY_BUFFER, tb.limit() * Buffers.SIZEOF_FLOAT, tb, GL.GL_STATIC_DRAW);
 //	        gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
 	        i++;
-		}	
+		}
+		// XXX pour eviter d'avoir une initialisation parielle - a mettre ailleurs
+		metalion  = new Metalion(this);
 	}
 	
 	public void dispose() {
@@ -116,7 +118,7 @@ public class MetalionManager {
 	public void setViewportInfos(ViewportInfos vpi) {
 		this.viewportInfos = vpi;
 	}
-	public Metalion metalion = new Metalion(this);
+	public Metalion metalion; // = new Metalion(this);
 	public void render() {
 		//if(objects==null || objects.length==0) return;
 		gl.glEnable(GL_BLEND);

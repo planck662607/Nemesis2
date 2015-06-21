@@ -5,6 +5,7 @@ import javax.media.opengl.GL2;
 import nemesis2.core.util.Stab;
 import nemesis2.core.util.bounds.Bounding;
 import nemesis2.core.util.bounds.Bounds;
+import nemesis2.core.util.bounds.BoundsModifier;
 
 public class Metalion implements Bounding {
 	private float px;
@@ -14,6 +15,7 @@ public class Metalion implements Bounding {
 	//	private float radius;
 	//	private float height;
 //	private float bounds[] = {0,0,0,0};
+	private Bounds boundsRef;
 	private Bounds bounds = new Bounds();
 
 	private float rotatex;
@@ -27,8 +29,14 @@ public class Metalion implements Bounding {
 	Metalion(MetalionManager manager) { // GreenStatueManager def) {
 		//		this.def = def;
 		stab = new Stab();
-		
 		this.manager = manager;
+		boundsRef = new Bounds(-manager.getHalfWidth(), -manager.getHalfHeight(), 2*manager.getHalfWidth(), 2*manager.getHalfHeight());
+		BoundsModifier bm = new BoundsModifier();
+		bm.top =  -0.35f;
+		bm.left = -.2f;
+		bm.bottom = -0.2f;
+		bm.right = 0-.3f;
+		bm.computeBounds(boundsRef);
 	}
 	
 	public float getPx() {
@@ -61,19 +69,29 @@ public class Metalion implements Bounding {
 		this.pz = pz;
 //		setupBounds();
 	}
-	private float boundPrecision = .5f; // 1 pour 100%
+	private float boundPrecision = 1f; //5f; // 1 pour 100%
 	private void setupBounds() {
-//		bounds[0] = px-manager.getHalfWidth();
-//		bounds[1] = py-manager.getHalfHeight();
-//		bounds[2] = px+manager.getHalfWidth();
-//		bounds[3] = py+manager.getHalfHeight();
-		float recHalfWidth = manager.getHalfWidth()*boundPrecision;
-		float recHalfHeight = manager.getHalfHeight()*boundPrecision;
+////		bounds[0] = px-manager.getHalfWidth();
+////		bounds[1] = py-manager.getHalfHeight();
+////		bounds[2] = px+manager.getHalfWidth();
+////		bounds[3] = py+manager.getHalfHeight();
+//		float recHalfWidth = manager.getHalfWidth()*boundPrecision;
+//		float recHalfHeight = manager.getHalfHeight()*boundPrecision;
+//		
+//		bounds.x = px-recHalfWidth; // manager.getHalfWidth();
+//		bounds.y = py-recHalfHeight; //manager.getHalfHeight();
+//		bounds.setWidth(recHalfWidth*2);
+//		bounds.setHeight(recHalfHeight*2);
 		
-		bounds.x = px-recHalfWidth; // manager.getHalfWidth();
-		bounds.y = py-recHalfHeight; //manager.getHalfHeight();
-		bounds.setWidth(recHalfWidth*2);
-		bounds.setHeight(recHalfHeight*2);
+//		boundsRef = new Bounds(-manager.getHalfWidth(), -manager.getHalfHeight(), 2*manager.getHalfWidth(), 2*manager.getHalfHeight());
+//		BoundsModifier bm = new BoundsModifier();
+//		bm.top =  0f;
+//		bm.left = 0f;
+//		bm.bottom = 0f;
+//		bm.right = 0f;
+//		bm.computeBounds(boundsRef);
+		
+		bounds.setUp(px+boundsRef.x, py+boundsRef.y, boundsRef.width, boundsRef.height);
 //		
 	}
 //	public float[] getBounds() {return bounds;}
@@ -140,6 +158,12 @@ public class Metalion implements Bounding {
 	@Override
 	public float getZDistance() {
 		return -pz;
+	}
+	
+	@Override
+	public boolean isVisible() {
+		// isAlive
+		return true;
 	}
 
 	@Override

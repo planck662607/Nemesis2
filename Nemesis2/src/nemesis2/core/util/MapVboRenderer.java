@@ -64,7 +64,7 @@ public class MapVboRenderer implements MapRenderer {
 		float px, py, px2, py2;
 		for(int i=1;i<nbMap;i++) {
 			int cx = (i%mx)*(textureBlockPixWidth) ;
-			int cy = (i/my)*(textureBlockPixHeight);
+			int cy = (i/mx)*(textureBlockPixHeight);
 			px = (float)cx/(float)textureWidth;
 			py = (float)cy/(float)textureHeight;
 			px2 = px+pctx; // -pctx/100f;

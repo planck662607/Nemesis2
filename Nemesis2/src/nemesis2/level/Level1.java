@@ -89,7 +89,7 @@ public class Level1 implements Level {
 //		mapScroller.initializeMapRenderer(new MapVboRenderer(), "/Users/francois/Pictures/graphic/nem/map-01pa.png", 184, 184, 8, 8);
 //		mapScroller.setTheMap("/Users/francois/Pictures/graphic/nem/map-01pa.txt");
 		mapScroller.setSizesParameters(30, 24);
-		mapScroller.initializeMapRenderer(new MapVboRenderer(), "/Users/francois/Pictures/graphic/nem/map-01pb.png", 128, 128, 8, 8);
+		mapScroller.initializeMapRenderer(new MapVboRenderer(), "/Users/francois/Pictures/graphic/nem/map-01pb.png", 128, 64, 8, 8);
 		mapScroller.setTheMap("/Users/francois/Pictures/graphic/nem/map-01pb.txt");
 
 		// 4x8
@@ -123,6 +123,9 @@ public class Level1 implements Level {
 		greenStatueDef.setMovable(speed, 11, 12);
 		
 		metalionManager = new MetalionManager(gl, viewportInfos, 30,24,2,1,10f);
+		colis.setUp(mapScroller);
+		colis.setUpMetalion(metalionManager.metalion);
+		//colis.addElements(greenStatueDef.getObjects());
 	}
 	
 	//public int tempTestdir=0;
@@ -176,59 +179,65 @@ public class Level1 implements Level {
 //		else if(down) metalionManager.metalion.setDir((short) 0x08);
 //		else metalionManager.metalion.setDir((short) 0);
 		sqtestx +=scrollSpeed;
+		colis.analyse();
+		collid = colis.metalionCollid;
 
-		Bounds bds= new Bounds(sqtestx, sqtesty, sqtestwh, sqtestwh);
-		viewportInfos.convertBounds(bds, -sqtestz);
-		collid = met.getBoundingBox().intersect(bds);
-		
-		// test
-		// test collision decors
-		// fonctionne pas mal mais il faudrait un bounds par type de block
-		if(mapScroller.getNbWidth()>0 && mapScroller.getNbHeight()>0) {
-			// collision avec le decors
-			//System.out.println(mapScroller.getNbWidth());
-			short[][] decors = mapScroller.getTheMap();
-			int sx = mapScroller.getStartxIndex();
-			int sy = mapScroller.getStartyIndex();
-			float bw = mapScroller.getBlockWidth();
-			float bh = mapScroller.getBlockHeight();
-			
-			float recBh = -1f;
-			float recy=0;
-			
-			float decorsx = mapScroller.getStartxPos();
-			float decorsy = mapScroller.getStartyPos()-bh;
-			Bounds decorsPartBounds = new Bounds();
-			//Bounds metBounds = met.getBoundingBox();
-//			System.out.println(decorsx+" "+decorsy+" "+bw+" "+bh+" - met - "+metBounds.x+" "+metBounds.y+" "+metBounds.width+" "+metBounds.height+" - nb -"+mapScroller.getNbWidth()+" "+mapScroller.getNbHeight());
-			for(int y=sy; y<sy+mapScroller.getNbHeight(); y++) {
-				decorsx = mapScroller.getStartxPos();
-				for(int x=sx; x<sx+mapScroller.getNbWidth(); x++) {
-					//System.out.format("%2d/%2d %3d ", y, x, decors[y][x]);
-					if(decors[y][x]!=(short)0) {
-						decorsPartBounds.setUp(decorsx, decorsy, bw, bh);
-						// inutile si même distance
-						if(recBh<0) {
-							recBh=bh*0.5f;
-							recy = recBh/2f;
-						}
-						//decorsPartBounds.y +=recy;
-						decorsPartBounds.setUp(decorsx, decorsy+recy, bw, recBh);
-						viewportInfos.convertBounds(decorsPartBounds, mapScroller.getDistance());
-						if(met.getBoundingBox().intersect(decorsPartBounds)) {
-							//System.out.println(met.getBoundingBox()+" : "+decorsPartBounds);
-							collid = true;
-							break;
-						}
-					}
-					decorsx+=bw;
-				}
-				if(collid) break;
-				//System.out.println();
-				decorsy-=bh;
-			}
-			
-		}
+//		Bounds bds= new Bounds(sqtestx, sqtesty, sqtestwh, sqtestwh);
+//		viewportInfos.convertBounds(bds, -sqtestz);
+//		collid = met.getBoundingBox().intersect(bds);
+//		
+//		// test
+//		// test collision decors
+//		// fonctionne pas mal mais il faudrait un bounds par type de block
+//		if(mapScroller.getNbWidth()>0 && mapScroller.getNbHeight()>0) {
+//			// collision avec le decors
+//			//System.out.println(mapScroller.getNbWidth());
+//			short[][] decors = mapScroller.getTheMap();
+//			Bounds[] mapBounds = mapScroller.getTheBounds();
+//			int sx = mapScroller.getStartxIndex();
+//			int sy = mapScroller.getStartyIndex();
+//			float bw = mapScroller.getBlockWidth();
+//			float bh = mapScroller.getBlockHeight();
+//			
+//			// float recBh = -1f;
+//			// float recy=0;
+//			
+//			float decorsx = mapScroller.getStartxPos();
+//			float decorsy = mapScroller.getStartyPos()-bh;
+//			Bounds decorsPartBounds = new Bounds();
+//			Bounds refBounds;
+//			//Bounds metBounds = met.getBoundingBox();
+////			System.out.println(decorsx+" "+decorsy+" "+bw+" "+bh+" - met - "+metBounds.x+" "+metBounds.y+" "+metBounds.width+" "+metBounds.height+" - nb -"+mapScroller.getNbWidth()+" "+mapScroller.getNbHeight());
+//			for(int y=sy; y<sy+mapScroller.getNbHeight(); y++) {
+//				decorsx = mapScroller.getStartxPos();
+//				for(int x=sx; x<sx+mapScroller.getNbWidth(); x++) {
+//					//System.out.format("%2d/%2d %3d ", y, x, decors[y][x]);
+//					if(decors[y][x]!=(short)0) {
+//						refBounds = mapBounds[decors[y][x]];
+//						//decorsPartBounds.setUp(decorsx, decorsy, bw, bh);
+//						decorsPartBounds.setUp(decorsx+refBounds.x, decorsy+refBounds.y, refBounds.width, refBounds.height);
+//						// inutile si même distance
+//						// if(recBh<0) {
+//						//	recBh=bh*0.5f;
+//						//	recy = recBh/2f;
+//						//}
+//						// //decorsPartBounds.y +=recy;
+//						// decorsPartBounds.setUp(decorsx, decorsy+recy, bw, recBh);
+//						viewportInfos.convertBounds(decorsPartBounds, mapScroller.getDistance());
+//						if(met.getBoundingBox().intersect(decorsPartBounds)) {
+//							//System.out.println(met.getBoundingBox()+" : "+decorsPartBounds);
+//							collid = true;
+//							break;
+//						}
+//					}
+//					decorsx+=bw;
+//				}
+//				if(collid) break;
+//				//System.out.println();
+//				decorsy-=bh;
+//			}
+//			
+//		}
 	
 		
 	}
